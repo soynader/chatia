@@ -22,14 +22,18 @@ const main = async () => {
       }
     });
 
+    const provider = createProvider(BaileysProvider);
+
     const bot = await createBotChatGpt({
-      provider: createProvider(BaileysProvider),
+      provider: provider,
       database: connection,
     });
 
     // Asegurarse de que bot.provider está definido antes de suscribirse a eventos
     if (bot && bot.provider) {
       bot.provider.on('message', async (message) => {
+        console.log('Mensaje recibido:', message); // Verifica el mensaje recibido
+    
         try {
           await bot.handleMsg(message);
         } catch (error) {
@@ -40,7 +44,6 @@ const main = async () => {
     } else {
       console.error('Error: No se pudo inicializar correctamente el bot.');
     }
-
     // Manejadores de errores globales
     process.on('unhandledRejection', (reason, promise) => {
       console.error('Unhandled Rejection at:', promise, 'reason:', reason);
@@ -57,3 +60,4 @@ const main = async () => {
 };
 
 main().catch(error => console.error('Error initializing the bot:', error));
+
