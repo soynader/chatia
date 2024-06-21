@@ -30,7 +30,7 @@ class ChatIAClass extends CoreClass {
    */
   handleMsg = async (ctx) => {
     const { from, body } = ctx;
-
+  
     try {
       // Fetch active prompts from the database
       const [rows] = await this.db.query(`
@@ -40,34 +40,44 @@ class ChatIAClass extends CoreClass {
         WHERE chatias.estado = 'activo'
       `);
       const prompts = rows.map(row => row.prompt);
-
+  
       if (prompts.length > 0) {
         // Include the prompts in the messages array
         const messages = [
           ...prompts.map(prompt => ({ role: 'system', content: prompt })),
           { role: 'user', content: body }
         ];
-
+  
         const interaccionChatGPT = await this.groqClient.chat.completions.create({
           messages: messages,
           model: this.optionsGPT.model,
           temperature: 0.7,
-          max_tokens: 606,
+          max_tokens: 512,
           top_p: 1,
           stream: true,
           stop: null,
         });
-
-        const content = interaccionChatGPT.choices[0]?.message?.content || '';
-        console.log('Response content:', content);
-
-        this.queue.push({ id: interaccionChatGPT.id, conversationId: interaccionChatGPT.conversationId });
-        const parseMessage = {
-          ...interaccionChatGPT,
-          answer: content
-        };
-
-        this.sendFlowSimple([parseMessage], from);
+  
+        // Log the response to understand its structure
+        console.log('interaccionChatGPT:', interaccionChatGPT);
+  
+        // Validate the response structure
+        if (interaccionChatGPT && interaccionChatGPT.choices && interaccionChatGPT.choices.length > 0) {
+          const content = interaccionChatGPT.choices[0]?.message?.content || '';
+          console.log('Response content:', content);
+  
+          this.queue.push({ id: interaccionChatGPT.id, conversationId: interaccionChatGPT.conversationId });
+          const parseMessage = {
+            ...interaccionChatGPT,
+            answer: content
+          };
+  
+          this.sendFlowSimple([parseMessage], from);
+        } else {
+          // Handle the case where choices is empty or undefined
+          console.error('No valid choices found in the response:', interaccionChatGPT);
+          this.sendFlowSimple([{ text: 'Lo siento, no pude generar una respuesta válida.' }], from);
+        }
       } else {
         // If no active prompts, send a default message
         this.sendFlowSimple([{ text: 'Lo siento, en este momento no puedo procesar tu solicitud.' }], from);
@@ -77,6 +87,7 @@ class ChatIAClass extends CoreClass {
       this.sendFlowSimple([{ text: 'Lo siento, hubo un error al procesar tu solicitud.' }], from);
     }
   };
+  
 }
 
 module.exports = ChatIAClass;
