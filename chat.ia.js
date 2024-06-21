@@ -51,8 +51,8 @@ class ChatIAClass extends CoreClass {
         const interaccionChatGPT = await this.groqClient.chat.completions.create({
           messages: messages,
           model: this.optionsGPT.model,
-          temperature: 0.8,
-          max_tokens: 512,
+          temperature: 0.7,
+          max_tokens: 606,
           top_p: 1,
           stream: true,
           stop: null,
