@@ -7,6 +7,7 @@ const createConnection = async () => {
         database: process.env.MYSQL_DATABASE,
         password: process.env.MYSQLPASSWORD,
         port: parseInt(process.env.MYSQLPORT, 10),
+        connectTimeout: 10000, // 10 segundos de tiempo de espera para la conexión
     });
 };
 
@@ -23,7 +24,7 @@ const fetchPrompt = async (promptType: string): Promise<string> => {
 };
 
 const generatePrompt = async (name: string): Promise<string> => {
-    const dateBase = await fetchPrompt('DATE_BASE');
+    const dateBase = await fetchPrompt('INFO_NEGOCIO');
     const prompt = await fetchPrompt('ENTRENAR_BOT');
     return prompt.replaceAll('{customer_name}', name).replaceAll('{context}', dateBase);
 };
@@ -32,9 +33,9 @@ const generatePrompt = async (name: string): Promise<string> => {
 const checkActivePrompts = async (): Promise<boolean> => {
     const connection = await createConnection();
     const [rows]: any = await connection.execute(`
-        SELECT botias.prompt 
-        FROM botias 
-        JOIN chatias ON botias.chatias_id = chatias.id 
+        SELECT prompts.prompt_type 
+        FROM prompts 
+        JOIN chatias ON prompts.chatias_id = chatias.id 
         WHERE chatias.estado = 'activo'
     `);
     connection.end();
