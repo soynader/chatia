@@ -23,7 +23,6 @@ logs/
 *.png
 .env
 *_sessions
-dist/
 tmp/
 !tmp/.gitkeep
 *.pdf

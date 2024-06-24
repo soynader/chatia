@@ -23,6 +23,13 @@ RUN apk add --no-cache \
 
 COPY . .
 RUN pnpm i
+RUN pnpm build
+
+#Etapa de producción
+FROM builder as deploy
+
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
 
 RUN pnpm install --frozen-lockfile --production
 CMD ["npm", "start"]
