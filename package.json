@@ -7,7 +7,7 @@
     "scripts": {
         "dev": "node ./node_modules/tsx/dist/cli.cjs ./src/index.ts",
         "build": "node ./node_modules/rollup/dist/bin/rollup -c",
-        "start": "node dist/index.js"
+        "start": "pm2-runtime start ecosystem.config.js --env production node dist/index.js"
     },
     "keywords": [],
     "dependencies": {
@@ -24,6 +24,7 @@
         "mysql2": "^3.10.1",
         "openai": "^4.24.1",
         "paypal-rest-sdk": "^1.8.1",
+        "pm2": "^5.4.1",
         "punycode": "^2.3.1",
         "wa-sticker-formatter": "4.3.2"
     },
@@ -38,4 +39,5 @@
         "rollup-plugin-typescript2": "^0.35.0",
         "tsx": "^3.14.0"
     }
+    
 }
