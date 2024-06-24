@@ -31,7 +31,7 @@ const initServer = (botInstance:any) => {
 
 
     app.listen(PORT, () => {
-        console.log(`http://locahost:${PORT} listo!`)
+        console.log(`https://chatia.up.railway.app:${PORT} listo!`)
     })
  }
 
