@@ -1,4 +1,4 @@
-import mysql from 'mysql2/promise';
+const mysql = require('mysql2/promise');
 
 const createConnection = async () => {
     return await mysql.createConnection({
@@ -7,13 +7,13 @@ const createConnection = async () => {
         database: process.env.MYSQL_DATABASE,
         password: process.env.MYSQLPASSWORD,
         port: parseInt(process.env.MYSQLPORT, 10),
-        connectTimeout: 10000, // 10 segundos de tiempo de espera para la conexión
+        connectTimeout: 10000,
     });
 };
 
-const fetchPrompt = async (promptType: string): Promise<string> => {
+const fetchPrompt = async (promptType) => {
     const connection = await createConnection();
-    const [rows]: any = await connection.execute('SELECT content FROM prompts WHERE prompt_type = ?', [promptType]);
+    const [rows] = await connection.execute('SELECT content FROM prompts WHERE prompt_type = ?', [promptType]);
     connection.end();
 
     if (rows.length > 0) {
@@ -23,16 +23,15 @@ const fetchPrompt = async (promptType: string): Promise<string> => {
     }
 };
 
-const generatePrompt = async (name: string): Promise<string> => {
+const generatePrompt = async (name) => {
     const dateBase = await fetchPrompt('INFO_NEGOCIO');
     const prompt = await fetchPrompt('ENTRENAR_BOT');
     return prompt.replaceAll('{customer_name}', name).replaceAll('{context}', dateBase);
 };
 
-// Nueva función para verificar si hay prompts activos
-const checkActivePrompts = async (): Promise<boolean> => {
+const checkActivePrompts = async () => {
     const connection = await createConnection();
-    const [rows]: any = await connection.execute(`
+    const [rows] = await connection.execute(`
         SELECT prompts.prompt_type 
         FROM prompts 
         JOIN chatias ON prompts.chatias_id = chatias.id 
@@ -42,5 +41,4 @@ const checkActivePrompts = async (): Promise<boolean> => {
     return rows.length > 0;
 };
 
-export { generatePrompt, checkActivePrompts };
-
+module.exports = { generatePrompt, checkActivePrompts };

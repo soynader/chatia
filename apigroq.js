@@ -1,16 +1,14 @@
-import Groq from "groq-sdk";
-import { generatePrompt, checkActivePrompts } from "./prompt"; // Importar la nueva función
-import mysql from 'mysql2/promise';
+const Groq = require("groq-sdk");
+const { generatePrompt, checkActivePrompts } = require("./prompt");
 
 const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY,
 });
 
-const run = async (name: string, history: any[]): Promise<string> => {
-    // Verificar si hay prompts activos
+const run = async (name, history) => {
     const activePrompts = await checkActivePrompts();
     if (!activePrompts) {
-        return 'Lo siento, en este momento no puedo procesar tu solicitud.';
+        return '';
     }
 
     const prompt = await generatePrompt(name);
@@ -18,8 +16,8 @@ const run = async (name: string, history: any[]): Promise<string> => {
         model: "mixtral-8x7b-32768",
         messages: [
             {
-                "role": "system",
-                "content": prompt
+                role: "system",
+                content: prompt
             },
             ...history
         ],
@@ -32,20 +30,19 @@ const run = async (name: string, history: any[]): Promise<string> => {
     return response.choices[0].message.content;
 };
 
-const runDetermine = async (history: any[]): Promise<string> => {
-    // Verificar si hay prompts activos
+const runDetermine = async (history) => {
     const activePrompts = await checkActivePrompts();
     if (!activePrompts) {
-        return 'Lo siento, en este momento no puedo procesar tu solicitud.';
+        return '';
     }
 
-    const prompt = await generatePrompt('client');  // Assuming 'client' is a generic name for determination
+    const prompt = await generatePrompt('client');
     const response = await groq.chat.completions.create({
         model: "mixtral-8x7b-32768",
         messages: [
             {
-                "role": "system",
-                "content": prompt
+                role: "system",
+                content: prompt
             },
             ...history
         ],
@@ -58,4 +55,4 @@ const runDetermine = async (history: any[]): Promise<string> => {
     return response.choices[0].message.content;
 };
 
-export { run, runDetermine };
+module.exports = { run, runDetermine };
