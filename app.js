@@ -16,7 +16,7 @@ const adapterDB = new MySQLAdapter({
 
 const main = async () => {
     // Definición del flujo principal del chatbot
-    const flowPrincipal = addKeyword(['@5ñ4ñ🧨2%3&ñ5♠', 'Ñ5&6$#8💣?♦9○5Ñ'])
+    const flowPrincipal = addKeyword(['@5ñ4ñ🧨2%3&ñ5♠'])
         .addAnswer('🙌 Hola bienvenido*. ¿Como puedo ayudarte el día de hoy 😀?');
 
     // Creación de los adaptadores de flujo y proveedor
