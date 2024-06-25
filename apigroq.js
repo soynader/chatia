@@ -13,7 +13,7 @@ const run = async (name, history) => {
 
     const prompt = await generatePrompt(name);
     const response = await groq.chat.completions.create({
-        model: "mixtral-8x7b-32768",
+        model: "llama3-8b-8192",
         messages: [
             {
                 role: "system",
@@ -38,7 +38,7 @@ const runDetermine = async (history) => {
 
     const prompt = await generatePrompt('client');
     const response = await groq.chat.completions.create({
-        model: "mixtral-8x7b-32768",
+        model: "llama3-8b-8192",
         messages: [
             {
                 role: "system",
